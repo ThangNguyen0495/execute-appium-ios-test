@@ -66,12 +66,6 @@ runs:
         eval "${{ inputs.scripts }}"
       shell: bash
 
-    - name: View appium log
-      if: always()
-      run: cat appium_log.txt
-      shell: bash
-
-
     - name: Upload Test Report
       if: always()
       uses: actions/upload-artifact@v3
@@ -80,4 +74,3 @@ runs:
         path: |
           **/target/BufferLog.log
           **/target/ExtentReport.html
-          **/recording_video
