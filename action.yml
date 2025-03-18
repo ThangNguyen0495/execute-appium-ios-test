@@ -44,19 +44,19 @@ runs:
         node-version: ${{ inputs.node_version }}
 
     - name: Install Appium
-      run: npm install -g appium > /dev/null 2>&1
+      run: npm install -g appium 
       shell: bash
 
     - name: Install FFmpeg
-      run: brew install ffmpeg > /dev/null 2>&1
+      run: brew install ffmpeg
       shell: bash
 
     - name: Install Carthage
-      run: brew install carthage > /dev/null 2>&1
+      run: brew install carthage 
       shell: bash
 
     - name: Install XCUITest driver
-      run: appium driver install xcuitest > /dev/null 2>&1
+      run: appium driver install xcuitest
       shell: bash
 
     - name: Start Appium server
@@ -65,7 +65,7 @@ runs:
 
     - name: Install dependencies
       run: |
-        mvn install -DskipTests > /dev/null 2>&1
+        mvn install -DskipTests
       shell: bash
 
     - name: Run Tests
@@ -81,5 +81,5 @@ runs:
       with:
         name: Test Reports - ${{ inputs.test_name }}
         path: |
-          **/target/BufferLog.log
-          **/target/ExtentReport.html
+          **/BufferLog.log
+          **/ExtentReport.html
