@@ -22,6 +22,9 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Get an available iOS simulator and boot it
+      uses: ThangNguyen0495/create-ios-simulator@main
+      
     - name: Checkout code
       uses: actions/checkout@v4
 
@@ -63,6 +66,7 @@ runs:
 
     - name: Run Tests
       run: |
+        echo 'iosSimulatorUdid=$DEVICE_UDID' > src/main/resources/config.properties
         eval "${{ inputs.scripts }}"
       shell: bash
 
