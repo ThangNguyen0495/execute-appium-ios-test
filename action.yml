@@ -83,3 +83,10 @@ runs:
         path: |
           **/BufferLog.log
           **/ExtentReport.html
+
+    - name: Upload Appium Logs
+      if: failure()  # Only runs if any previous step fails
+      uses: actions/upload-artifact@v4
+      with:
+        name: Appium Logs - ${{ inputs.test_name }}
+        path: appium_log.txt
