@@ -70,7 +70,8 @@ runs:
 
     - name: Run Tests
       run: |
-        echo 'iosSimulatorUdid=$DEVICE_UDID' > ${{ inputs.env_file_path }}
+        echo "$DEVICE_UDID"
+        echo "iosSimulatorUdid=$DEVICE_UDID" > ${{ inputs.env_file_path }}
         eval "${{ inputs.scripts }}"
       shell: bash
 
