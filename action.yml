@@ -14,7 +14,7 @@ inputs:
   test_name:
     description: 'The name of the test suite.'
     required: true
-    
+  
   env_file_path:
     description: 'The path of the environment configuration'
     required: true
@@ -28,7 +28,7 @@ runs:
   steps:
     - name: Get an available iOS simulator and boot it
       uses: ThangNguyen0495/create-ios-simulator@main
-      
+
     - name: Checkout code
       uses: actions/checkout@v4
 
@@ -44,7 +44,7 @@ runs:
         node-version: ${{ inputs.node_version }}
 
     - name: Install Appium
-      run: npm install -g appium 
+      run: npm install -g appium
       shell: bash
 
     - name: Install FFmpeg
@@ -52,7 +52,7 @@ runs:
       shell: bash
 
     - name: Install Carthage
-      run: brew install carthage 
+      run: brew install carthage
       shell: bash
 
     - name: Install XCUITest driver
@@ -72,7 +72,7 @@ runs:
       run: |
         echo "$DEVICE_UDID"
         echo "iosSimulatorUdid=$DEVICE_UDID" > ${{ inputs.env_file_path }}
-        eval "${{ inputs.scripts }}"
+        eval "${{ inputs.scripts }}" | tee terminal_log.txt
       shell: bash
 
     - name: Upload Test Report
@@ -84,8 +84,18 @@ runs:
           **/BufferLog.log
           **/ExtentReport.html
 
+    - name: Check for SessionNotCreatedException
+      id: check_error
+      run: |
+        if grep -q "org.openqa.selenium.SessionNotCreatedException:" terminal_log.txt; then
+          echo "ERROR_FOUND=true" >> $GITHUB_ENV
+        else
+          echo "ERROR_FOUND=false" >> $GITHUB_ENV
+        fi
+      shell: bash
+  
     - name: Upload Appium Logs
-      if: failure()  # Only runs if any previous step fails
+      if: env.ERROR_FOUND == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: Appium Logs - ${{ inputs.test_name }}
