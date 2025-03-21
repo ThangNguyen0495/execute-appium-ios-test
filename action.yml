@@ -26,9 +26,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Get an available iOS simulator and boot it
-      uses: ThangNguyen0495/create-ios-simulator@main
-
     - name: Checkout code
       uses: actions/checkout@v4
 
@@ -67,6 +64,9 @@ runs:
       run: |
         mvn install -DskipTests
       shell: bash
+      
+    - name: Get an available iOS simulator and boot it
+      uses: ThangNguyen0495/create-ios-simulator@main
 
     - name: Run Tests
       run: |
