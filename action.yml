@@ -43,24 +43,12 @@ runs:
       with:
         node-version: ${{ inputs.node_version }}
 
-    - name: Install Appium
-      run: npm install -g appium
-      shell: bash
-
-    - name: Install FFmpeg
-      run: brew install ffmpeg
-      shell: bash
-
-    - name: Install Carthage
-      run: brew install carthage
-      shell: bash
-
-    - name: Install XCUITest driver
-      run: appium driver install xcuitest
-      shell: bash
-
-    - name: Start Appium server
-      run: nohup appium -a 0.0.0.0 -p 4723 -pa /wd/hub --relaxed-security> appium_log.txt 2>&1 & > /dev/null 2>&1
+    - name: Check bash scripts
+      run: |
+        chmod +x ./start_appium_env.sh
+        ./start_appium_env.sh "Iphone 15" 17-5
+        DEVICE_ID=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}' | head -n1)
+        echo "DEVICE_UDID=$DEVICE_UDID" >> $GITHUB_ENV
       shell: bash
 
     - name: Install dependencies
@@ -70,7 +58,6 @@ runs:
 
     - name: Run Tests
       run: |
-        echo "$DEVICE_UDID"
         echo "iosSimulatorUdid=$DEVICE_UDID" > ${{ inputs.env_file_path }}
         eval "${{ inputs.scripts }}" | tee terminal_log.txt
       shell: bash
