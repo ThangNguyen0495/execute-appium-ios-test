@@ -26,9 +26,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Get an available iOS simulator and boot it
-      uses: ThangNguyen0495/create-ios-simulator@main
-      
     - name: Checkout code
       uses: actions/checkout@v4
 
