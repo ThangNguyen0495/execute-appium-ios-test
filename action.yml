@@ -6,11 +6,6 @@ inputs:
     required: false
     default: '22'
 
-  node_version:
-    description: 'The version of NodeJS to install.'
-    required: false
-    default: '21'
-
   test_name:
     description: 'The name of the test suite.'
     required: true
@@ -29,23 +24,19 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: ${{ inputs.java_version }}
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ inputs.node_version }}
-
     - name: Check bash scripts
       run: |
-        chmod +x ./automated_ios_test_setup.sh
-        ./automated_ios_test_setup.sh "Iphone 15" 17-5
+        SIMULATOR_NAME="iPhone 15"
+        SIMULATOR_OS=17.5
+        chmod +x ./start_appium_env.sh
+        ./start_appium_env.sh "$SIMULATOR_NAME" "$SIMULATOR_OS" "${{ inputs.java_version }}"
+    
         DEVICE_UDID=$(xcrun simctl list devices | grep "(Booted)" | awk -F '[()]' '{print $2}' | head -n1)
         echo "DEVICE_UDID=$DEVICE_UDID" >> $GITHUB_ENV
+    
+        JAVA_PATH="$HOME/.sdkman/candidates/java/${{ inputs.java_version }}-open"
+        echo "JAVA_HOME=$JAVA_PATH" >> $GITHUB_ENV
+        echo "PATH=$JAVA_PATH/bin:$PATH" >> $GITHUB_ENV
       shell: bash
 
     - name: Install dependencies
@@ -67,20 +58,3 @@ runs:
         path: |
           **/BufferLog.log
           **/ExtentReport.html
-
-    - name: Check for SessionNotCreatedException
-      id: check_error
-      run: |
-        if grep -q "org.openqa.selenium.SessionNotCreatedException:" terminal_log.txt; then
-          echo "ERROR_FOUND=true" >> $GITHUB_ENV
-        else
-          echo "ERROR_FOUND=false" >> $GITHUB_ENV
-        fi
-      shell: bash
-  
-    - name: Upload Appium Logs
-      if: env.ERROR_FOUND == 'true'
-      uses: actions/upload-artifact@v4
-      with:
-        name: Appium Logs - ${{ inputs.test_name }}
-        path: appium_log.txt
